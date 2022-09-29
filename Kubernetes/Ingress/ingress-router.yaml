@@ -10,24 +10,31 @@ spec:
   rules:
     - http:
         paths:
-        - path: /
-          pathType: Prefix
-          backend:
-            service:
-              name: ui-cluster-ip
-              port:
-                number: 80
-        - path: /lighting
-          pathType: Prefix
-          backend:
-            service:
-              name: lighting-service-cluster-ip
-              port:
-                number: 8000
-        - path: /devices
-          pathType: Prefix
-          backend:
-            service:
-              name: device-manager-service-cluster-ip
-              port:
-                number: 8000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: ui-cluster-ip
+                port:
+                  number: 80
+          - path: /lighting
+            pathType: Prefix
+            backend:
+              service:
+                name: lighting-service-cluster-ip
+                port:
+                  number: 8000
+          - path: /power
+            pathType: Prefix
+            backend:
+              service:
+                name: power-service-cluster-ip
+                port:
+                  number: 8000
+          - path: /devices
+            pathType: Prefix
+            backend:
+              service:
+                name: device-manager-service-cluster-ip
+                port:
+                  number: 8000
