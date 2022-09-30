@@ -5,7 +5,7 @@ cyn=$'\e[1;36m'
 grn=$'\e[1;32m'
 end=$'\e[0m'
 
-sudo kubectl delete all --all  --wait=false
+sudo kubectl delete daemonsets,replicasets,services,deployments,pods,rc,ingress,secrets --all
 
 printf "%s\n" "${cyn}Deploying all SECRETS...${end}"
 envsubst < Secrets/secrets.yaml | sudo kubectl apply -f -
