@@ -34,3 +34,14 @@ spec:
                 secretKeyRef:
                   name: iot-secrets
                   key: MONGO_DB_IP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: power-service-cluster-ip
+spec:
+  type: ClusterIP
+  selector:
+    svc: power-service
+  ports:
+    - port: 8000

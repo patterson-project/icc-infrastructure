@@ -32,3 +32,14 @@ spec:
                 secretKeyRef:
                   name: iot-secrets
                   key: MONGO_DB_IP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: kasa-bulb-controller-cluster-ip
+spec:
+  type: ClusterIP
+  selector:
+    svc: kasa-bulb-controller
+  ports:
+    - port: 8000

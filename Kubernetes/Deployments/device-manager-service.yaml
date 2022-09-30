@@ -34,3 +34,15 @@ spec:
                 secretKeyRef:
                   name: iot-secrets
                   key: MONGO_DB_IP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: device-manager-service-cluster-ip
+spec:
+  type: ClusterIP
+  selector:
+    svc: device-manager-service
+  ports:
+    - port: 8000
+
