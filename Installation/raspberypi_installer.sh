@@ -22,11 +22,6 @@ echo \
 sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
-# Logging user into dockerhub
-printf "\n%s\n" "${cyn}2. Log into docker hub${end}"
-sleep 1
-sudo docker login
-
 # Installing Kubernetes
 printf "\n%s\n" "${cyn}3. Installing k3s...${end}"
 sleep 1
@@ -37,28 +32,6 @@ sudo sed -i '$s/$/ cgroup_memory=1 cgroup_enable=memory/' /boot/cmdline.txt
 echo "namespace 8.8.8.8" >> /etc/resolv.conf
 echo "namespace 8.8.4.4" >> /etc/resolv.conf
 
-# Setting up environment variables
-printf "\n%s\n" "${cyn}4. Environment variable setup${end}"
-sleep 1
-echo "Environment variable setup"
-read -p "Choose a database username: " mongo_username
-read -p "Choose a database password: " mongo_password
-read -p "Enter the IP of your device: " mongo_ip
-read -p "Enter your dockerhub username: " dockerhub_username
-
-echo "MONGO_DB_USERNAME=$mongo_username" >> /etc/environment
-echo "MONGO_DB_PASSWORD=$mongo_password" >> /etc/environment
-echo "MONGO_DB_IP=$mongo_ip" >> /etc/environment
-echo "DOCKER_HUB_USERNAME=$dockerhub_username" >> /etc/environment
-
-source /etc/environment
-
-# Deploying the MongoDb locally
-printf "\n%s\n" "${cyn}5. Deploying local Mongo Database...${end}"
-sleep 1
-cd MongoDb
-sudo docker compose up --build -d
-cd ..
 
 # Restarting for changes to take effect
 printf "\n%s\n" "${grn}Done! Restarting for changes to take effect...${end}"

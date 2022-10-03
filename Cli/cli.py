@@ -21,18 +21,21 @@ app = typer.Typer(add_completion=False)
 console = Console(theme=icc_cli_theme)
 
 
-def update_cluster() -> None:
-    os.system("sudo kubectl delete --all pods")
-
-
 @app.command(name="update")
 def update() -> None:
-    """Updates IoT Control Center with the most recent version."""
+    """Updates IoT Control Center pods with the most recent version."""
     console.print(
         "Deleting all pods and pulling newest from docker hub...", style="info")
-    update_cluster()
+    os.system("sudo kubectl delete --all pods")
     console.print("Done.", style="success")
     raise typer.Exit()
+
+
+@app.command(name="upgrade")
+def upgrade() -> None:
+    """Upgrades CLI to the most recent version."""
+    console.print("Updating CLI...", style="info")
+    os.system("git pull origin main")
 
 
 @app.command(name="deploy")
@@ -46,6 +49,8 @@ def deploy(cpu_architecture: str = typer.Option(..., "--arch", "-a", help="Host 
         console.print(
             f"Invalid CPU architecture. {cpu_architecture} is not supported.", style="error")
         raise typer.Exit()
+
+    os.system("sudo kubectl delete --all pods,services,deployments,ingress,secrets")
 
     kubernetes_path = os.path.join(
         os.environ["ICC_INFRASTRUCTURE_PATH"], "Kubernetes")
@@ -65,11 +70,13 @@ def deploy(cpu_architecture: str = typer.Option(..., "--arch", "-a", help="Host 
         os.chdir(secrets_path)
         os.system(f"envsubst < {secret} | sudo kubectl apply -f -")
 
+    console.print("Done.", style="success")
+
 
 @app.command(name="database")
 def datanase(
     create: bool = typer.Option(False, "--create",
-                                "-c", help="Create docker container with MongoDb"),
+                                "-c", help="Create docker container with MongoDb. If an instance already exists, this command has no effect."),
     delete: bool = typer.Option(False, "--delete",
                                 "-d", help="Delete docker container with MongoDb")
 ) -> None:
@@ -83,18 +90,22 @@ def datanase(
         raise typer.Exit()
 
     if create:
-        # ASK for username and password here
-        # WARN and ask for confirmation: All exisiting data will be deleted (if exists)
-        # Perform a docker compose down and delete all containers in dir
-        # docker compose up --build -d
-        print("bringing up mongo")
+        console.print("Creating database...", style="info")
+        os.chdir(mongo_db_path)
+        os.system("sudo docker compose up --build -d")
+        console.print("Done.", style="success")
     elif delete:
-        # WARN and ask for a confirmation y/n
-        # Docker-compose down
-        print("deleting mongo")
+        console.print(
+            "Warning: All existing database information will be lost. Proceed? y/n: ", end="", style="warning")
+        confirmation = input()
+
+        if confirmation == "y":
+            console.print("Deleting database...", style="info")
+            os.chdir(mongo_db_path)
+            os.system("sudo docker compose rm -s -v")
+            console.print("Done.", style="success")
 
 
-# Takes options for setting specific
 @app.command(name="variables")
 def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
                                             "-dbip", help="Change MongoDb IP address"),
@@ -104,18 +115,43 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
                                                   "-dbp", help="Change MongoDb admin password")) -> None:
     """Set the various environment variables used within the cluster"""
     if mongo_ip:
-        print("changing mongo IP")
-        # WARN that icc deploy needs to be run for this change to take effect
+        console.print(
+            "Warning: All connected database connections will no longer be connected. Proceed? y/n: ", end="", style="warning")
+        confirmation = input()
+
+        if confirmation == "y":
+            new_ip = input("New MongoDb IP: ")
+            os.system(
+                f"sudo grep -q \" ^ export MONGO_DB_IP=\" ~/.bashrc && sudo sed \"s | ^export MONGO_DB_IP=.* | MONGO_DB_IP={new_ip} | \" -i ~/.bashrc || sudo sed \"$ a\export MONGO_DB_IP={new_ip}\" -i ~/.bashrc")
+            console.print(
+                "icc deploy must be run after for changes take effect", style="warning")
+            console.print("Done.", style="success")
 
     if mongo_username:
-        print("changing mongodb username")
-        # WARN and ask for confirmaion; Make sure device username and password are correct
-        # WARN that icc deploy needs to be run for this change to take effect
+        console.print(
+            "Warning: All connected database connections will be unauthenticated. Proceed? y/n: ", end="", style="warning")
+        confirmation = input()
+
+        if confirmation == "y":
+            new_username = input("New MongoDb admin username: ")
+            os.system(
+                f"sudo grep -q \" ^ export MONGO_DB_USERNAME=\" ~/.bashrc && sudo sed \"s | ^export MONGO_DB_USERNAME=.* | MONGO_DB_USERNAME={new_username} | \" -i ~/.bashrc || sudo sed \"$ a\export MONGO_DB_USERNAME={new_username}\" -i ~/.bashrc")
+            console.print(
+                "icc deploy must be run after for changes to take effect", style="warning")
+            console.print("Done.", style="success")
 
     if mongo_password:
-        print("Changing mongodb password")
-        # WARN and ask for y/n; ensure correct password, all connected service connections will fail if wrong
-        # WARN that icc deploy needs to be run for this change to take effect
+        console.print(
+            "Warning: All connected database connections will be unauthenticated. Proceed? y/n: ", end="", style="warning")
+        confirmation = input()
+
+        if confirmation == "y":
+            new_password = input("New MongoDb admin password: ")
+            os.system(
+                f"sudo grep -q \" ^ export MONGO_DB_PASSWORD=\" ~/.bashrc && sudo sed \"s | ^export MONGO_DB_PASSWORD=.* | MONGO_DB_PASSWORD={new_password} | \" -i ~/.bashrc || sudo sed \"$ a\export MONGO_DB_PASSWORD={new_password}\" -i ~/.bashrc")
+            console.print(
+                "icc deploy must be run after for changes to take effect", style="warning")
+            console.print("Done.", style="success")
 
     return
 

@@ -12,6 +12,5 @@ sudo rm icc
 
 icc_infrastructure_dir=$(dirname $PWD)
 sudo grep -q "^export ICC_INFRASTRUCTURE_PATH=" ~/.bashrc && sudo sed "s|^export ICC_INFRASTRUCTURE_PATH=.*|ICC_INFRASTRUCTURE_PATH=$icc_infrastructure_dir|" -i ~/.bashrc || sudo sed "$ a\export ICC_INFRASTRUCTURE_PATH=$icc_infrastructure_dir" -i ~/.bashrc
-source ~/.bashrc
 
-printf '%s\n' 'Done! Run "icc --help" for usage.'
+printf '%s\n' 'Done! Run source ~/.bashrc or logout & login for these changes to take effect. \nRun "icc --help" for usage.'
