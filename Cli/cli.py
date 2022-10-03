@@ -4,6 +4,8 @@ from typing import Optional
 from rich.console import Console
 from rich.theme import Theme
 import typer
+import asyncio
+from kasa import Discover
 
 __version__ = "0.0.1"
 __app_name__ = "icc"
@@ -93,7 +95,7 @@ def datanase(
 
 
 # Takes options for setting specific
-@ app.command(name="variables")
+@app.command(name="variables")
 def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
                                             "-dbip", help="Change MongoDb IP address"),
               mongo_username: bool = typer.Option(False, "--db-username",
@@ -118,13 +120,22 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
     return
 
 
+@app.command(name="discover")
+def discover() -> None:
+    """List TP-Link Kasa devices on home network"""
+    devices = asyncio.run(Discover.discover())
+    for addr, dev in devices.items():
+        asyncio.run(dev.update())
+        print(f"{addr} >> {dev}")
+
+
 def _version_callback(value: bool) -> None:
     if value:
         typer.echo(f"{__app_name__} v{__version__}")
         raise typer.Exit()
 
 
-@ app.callback()
+@app.callback()
 def main(
     version: Optional[bool] = typer.Option(
         None,
