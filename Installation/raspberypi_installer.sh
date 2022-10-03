@@ -8,7 +8,7 @@ cyn=$'\e[1;36m'
 end=$'\e[0m'
 
 # Installing docker and docker compose
-printf "%s\n" "${cyn}1. Installing docker and docker compose...${end}"
+printf "%s\n" "${cyn}Installing docker and docker compose...${end}"
 sleep 1
 sudo apt-get update
 sudo apt-get install -y ca-certificates curl gnupg lsb-release
@@ -23,7 +23,7 @@ sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 # Installing Kubernetes
-printf "\n%s\n" "${cyn}3. Installing k3s...${end}"
+printf "\n%s\n" "${cyn}Installing k3s...${end}"
 sleep 1
 curl -sfL https://get.k3s.io | sudo sh -
 sudo apt install -y linux-modules-extra-raspi
@@ -32,6 +32,12 @@ sudo sed -i '$s/$/ cgroup_memory=1 cgroup_enable=memory/' /boot/cmdline.txt
 echo "namespace 8.8.8.8" >> /etc/resolv.conf
 echo "namespace 8.8.4.4" >> /etc/resolv.conf
 
+# Deploying the MongoDb locally
+printf "\n%s\n" "${cyn}Deploying local Mongo Database...${end}"
+sleep 1
+cd MongoDb
+sudo docker compose up --build -d
+cd ..
 
 # Restarting for changes to take effect
 printf "\n%s\n" "${grn}Done! Restarting for changes to take effect...${end}"
