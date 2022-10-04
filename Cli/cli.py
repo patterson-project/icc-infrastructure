@@ -23,7 +23,7 @@ console = Console(theme=icc_cli_theme)
 
 @app.command(name="update")
 def update() -> None:
-    """Updates IoT Control Center pods with the most recent version."""
+    """Updates icc pods with the most recent version."""
     console.print(
         "Deleting all pods and pulling newest from docker hub...", style="info")
     os.system("sudo kubectl delete --all pods")
@@ -40,7 +40,7 @@ def upgrade() -> None:
 
 @app.command(name="deploy")
 def deploy(cpu_architecture: str = typer.Option(..., "--arch", "-a", help="Host CPU architecture. Supported architectures include: arm64, amd64")) -> None:
-    """Deploys all IoT Control Center infrastructure"""
+    """Deploys all icc infrastructure"""
     if cpu_architecture == "amd64":
         os.environ["DOCKER_HUB_USERNAME"] = "canadrian72"
     elif cpu_architecture == "arm64":
@@ -80,7 +80,7 @@ def datanase(
     delete: bool = typer.Option(False, "--delete",
                                 "-d", help="Delete docker container with MongoDb")
 ) -> None:
-    """Create or delete the IoT Control Center local MongoDb"""
+    """Create or delete the icc local MongoDb"""
     mongo_db_path = os.path.join(
         os.environ["ICC_INFRASTRUCTURE_PATH"], "MongoDb")
 
@@ -157,8 +157,13 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
 
 
 @app.command(name="status")
-def status() -> None:
-    """Get status of Kubernetes pods"""
+def status(watch: bool = typer.Option(False, "--watch",
+                                      "-w", help="Watch pod statuses"),) -> None:
+    """Get status of icc Kubernetes pods"""
+    if (watch):
+        os.system("sudo kubectl get pods -w")
+    else:
+        os.system("sudo kubectl get pods")
 
 
 @app.command(name="discover")
