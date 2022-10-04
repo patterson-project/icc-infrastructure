@@ -123,10 +123,12 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
                                                   "-dbu", help="Change MongoDb admin username"),
               mongo_password: bool = typer.Option(False, "--db-password",
                                                   "-dbp", help="Change MongoDb admin password"),
+              all: bool = typer.Option(False, "--all",
+                                       "-a", help="Change all variables"),
               force: bool = typer.Option(False, "--force",
                                          "-f", help="Force without warnings")) -> None:
     """Set the various environment variables used within the cluster"""
-    if mongo_ip:
+    if mongo_ip or all:
         confirmation = None
         if not force:
             console.print(
@@ -137,7 +139,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
             new_ip = input("New MongoDb IP: ")
             env_variable_replace("MONGO_DB_IP", new_ip)
 
-    if mongo_username:
+    if mongo_username or all:
         confirmation = None
         if not force:
             console.print(
@@ -148,7 +150,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
             new_username = input("New MongoDb admin username: ")
             env_variable_replace("MONGO_DB_USERNAME", new_username)
 
-    if mongo_password:
+    if mongo_password or all:
         confirmation = None
         if not force:
             console.print(

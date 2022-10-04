@@ -25,8 +25,13 @@ printf "\n%s\n" "${cyn}Installing k3s...${end}"
 sleep 1
 curl -sfL https://get.k3s.io | sudo sh -
 
-echo "namespace 8.8.8.8" >> /etc/resolv.conf
-echo "namespace 8.8.4.4" >> /etc/resolv.conf
+sudo echo "namespace 8.8.8.8" >> /etc/resolv.conf
+sudo echo "namespace 8.8.4.4" >> /etc/resolv.conf
+
+# Initializing environment variables
+echo "MONGO_DB_USERNAME" >> ~/.bashrc
+echo "MONGO_DB_IP" >> ~/.bashrc
+echo "MONGO_DB_PASSWORD" >> ~/.bashrc
 
 # Installing icc cli
 printf "\n%s\n" "${cyn}Installing icc CLI...${end}"
@@ -34,8 +39,8 @@ sleep 1
 cd Cli
 bash cli_installer.sh
 source ~/.bashrc
+icc variables -a -f
 cd ..
-
 
 # Deploying the MongoDb locally
 printf "\n%s\n" "${cyn}Deploying local Mongo Database...${end}"
