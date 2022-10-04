@@ -35,7 +35,10 @@ def update() -> None:
 def upgrade() -> None:
     """Upgrades CLI to the most recent version."""
     console.print("Updating CLI...", style="info")
+    os.chdir(os.environ["ICC_INFRASTRUCTURE_PATH"])
     os.system("git pull origin main")
+    os.chdir("Cli")
+    os.system("bash cli_installer.sh")
 
 
 @app.command(name="deploy")
@@ -107,52 +110,59 @@ def datanase(
             console.print("Done.", style="success")
 
 
-@app.command(name="variables")
+def env_variable_replace(variable: str, value: str):
+    os.system(
+        f"sed -i '/{variable}/c\export {variable}={value}' ~/.bashrc"
+    )
+
+
+@ app.command(name="variables")
 def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
                                             "-dbip", help="Change MongoDb IP address"),
               mongo_username: bool = typer.Option(False, "--db-username",
                                                   "-dbu", help="Change MongoDb admin username"),
               mongo_password: bool = typer.Option(False, "--db-password",
-                                                  "-dbp", help="Change MongoDb admin password")) -> None:
+                                                  "-dbp", help="Change MongoDb admin password"),
+              force: bool = typer.Option(False, "--force",
+                                         "-f", help="Force without warnings")) -> None:
     """Set the various environment variables used within the cluster"""
     if mongo_ip:
-        console.print(
-            "Warning: All connected database connections will no longer be connected. Proceed? y/n: ", end="", style="warning")
-        confirmation = input()
-
-        if confirmation == "y":
-            new_ip = input("New MongoDb IP: ")
-            os.system(
-                f"sudo grep -q \" ^ export MONGO_DB_IP=\" ~/.bashrc && sudo sed \"s | ^export MONGO_DB_IP=.* | MONGO_DB_IP={new_ip} | \" -i ~/.bashrc || sudo sed \"$ a\export MONGO_DB_IP={new_ip}\" -i ~/.bashrc")
+        confirmation = None
+        if not force:
             console.print(
-                "icc deploy must be run after for changes take effect", style="warning")
-            console.print("Done.", style="success")
+                "Warning: All connected database connections will be disconnected. Proceed? y/n: ", end="", style="warning")
+            confirmation = input()
+
+        if confirmation == "y" or force:
+            new_ip = input("New MongoDb IP: ")
+            env_variable_replace("MONGO_DB_IP", new_ip)
 
     if mongo_username:
-        console.print(
-            "Warning: All connected database connections will be unauthenticated. Proceed? y/n: ", end="", style="warning")
-        confirmation = input()
-
-        if confirmation == "y":
-            new_username = input("New MongoDb admin username: ")
-            os.system(
-                f"sudo grep -q \" ^ export MONGO_DB_USERNAME=\" ~/.bashrc && sudo sed \"s | ^export MONGO_DB_USERNAME=.* | MONGO_DB_USERNAME={new_username} | \" -i ~/.bashrc || sudo sed \"$ a\export MONGO_DB_USERNAME={new_username}\" -i ~/.bashrc")
+        confirmation = None
+        if not force:
             console.print(
-                "icc deploy must be run after for changes to take effect", style="warning")
-            console.print("Done.", style="success")
+                "Warning: All connected database connections will be unauthenticated. Proceed? y/n: ", end="", style="warning")
+            confirmation = input()
+
+        if confirmation == "y" or force:
+            new_username = input("New MongoDb admin username: ")
+            env_variable_replace("MONGO_DB_USERNAME", new_username)
 
     if mongo_password:
-        console.print(
-            "Warning: All connected database connections will be unauthenticated. Proceed? y/n: ", end="", style="warning")
-        confirmation = input()
-
-        if confirmation == "y":
-            new_password = input("New MongoDb admin password: ")
-            os.system(
-                f"sudo grep -q \" ^ export MONGO_DB_PASSWORD=\" ~/.bashrc && sudo sed \"s | ^export MONGO_DB_PASSWORD=.* | MONGO_DB_PASSWORD={new_password} | \" -i ~/.bashrc || sudo sed \"$ a\export MONGO_DB_PASSWORD={new_password}\" -i ~/.bashrc")
+        confirmation = None
+        if not force:
             console.print(
-                "icc deploy must be run after for changes to take effect", style="warning")
-            console.print("Done.", style="success")
+                "Warning: All connected database connections will be unauthenticated. Proceed? y/n: ", end="", style="warning")
+            confirmation = input()
+
+        if confirmation == "y" or force:
+            new_password = input("New MongoDb admin password: ")
+            env_variable_replace("MONGO_DB_PASSWORD", new_password)
+
+    console.print(
+        "icc deploy must be run after for changes take effect", style="warning")
+    console.print("Done.", style="success")
+
     return
 
 

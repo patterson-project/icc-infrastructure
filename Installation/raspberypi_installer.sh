@@ -32,12 +32,21 @@ sudo sed -i '$s/$/ cgroup_memory=1 cgroup_enable=memory/' /boot/cmdline.txt
 echo "namespace 8.8.8.8" >> /etc/resolv.conf
 echo "namespace 8.8.4.4" >> /etc/resolv.conf
 
+# Installing icc cli
+printf "\n%s\n" "${cyn}Installing icc CLI...${end}"
+sleep 1
+cd Cli
+bash cli_installer.sh
+source ~/.bashrc
+cd ..
+
+
 # Deploying the MongoDb locally
 printf "\n%s\n" "${cyn}Deploying local Mongo Database...${end}"
 sleep 1
-cd MongoDb
-sudo docker compose up --build -d
-cd ..
+icc variables -dbu -dbp -f
+source ~/.bashrc
+icc database -c
 
 # Restarting for changes to take effect
 printf "\n%s\n" "${grn}Done! Restarting for changes to take effect...${end}"
