@@ -7,7 +7,7 @@ grn=$'\e[1;32m'
 cyn=$'\e[1;36m'
 end=$'\e[0m'
 
-sudo apt-get update && sudo apt upgrade -y
+sudo apt-get update && sudo apt-get upgrade -y
 
 # Installing docker and docker compose
 printf "%s\n" "${cyn}Installing docker and docker compose...${end}"
@@ -20,6 +20,7 @@ echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
+sudo apt-get update && sudo apt-get upgrade -y
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 # Initializing environment variables
@@ -39,6 +40,7 @@ cd ..
 # Deploying the MongoDb locally
 printf "\n%s\n" "${cyn}Deploying local Mongo Database...${end}"
 sleep 1
+icc variables -dbu -dbp -f
 source ~/.bashrc
 icc database -c
 
