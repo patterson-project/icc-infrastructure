@@ -13,7 +13,7 @@ __app_name__ = "icc"
 icc_cli_theme = Theme({
     "info": "bold cyan",
     "success": "bold green",
-    "warning": "magenta",
+    "warning": "bold yellow",
     "error": "bold red"
 })
 
@@ -102,7 +102,7 @@ def datanase(
         if confirmation == "y":
             console.print("Deleting database...", style="info")
             os.chdir(mongo_db_path)
-            os.system("sudo docker compose rm -s -v")
+            os.system("sudo -E docker compose rm -s -v")
             console.print("Done.", style="success")
 
 
