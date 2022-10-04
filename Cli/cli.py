@@ -152,8 +152,12 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
             console.print(
                 "icc deploy must be run after for changes to take effect", style="warning")
             console.print("Done.", style="success")
-
     return
+
+
+@app.command(name="status")
+def status() -> None:
+    """Get status of Kubernetes pods"""
 
 
 @app.command(name="discover")
