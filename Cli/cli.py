@@ -102,7 +102,8 @@ def datanase(
         if confirmation == "y":
             console.print("Deleting database...", style="info")
             os.chdir(mongo_db_path)
-            os.system("sudo -E docker compose rm -s -v")
+            os.system("sudo -E docker compose rm")
+            os.system("sudo rm -rf database && sudo rm -rf init-mongo.js")
             console.print("Done.", style="success")
 
 
