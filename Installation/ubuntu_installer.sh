@@ -7,6 +7,8 @@ grn=$'\e[1;32m'
 cyn=$'\e[1;36m'
 end=$'\e[0m'
 
+sudo apt-get update && sudo apt upgrade -y
+
 # Installing docker and docker compose
 printf "%s\n" "${cyn}Installing docker and docker compose...${end}"
 sleep 1
@@ -18,15 +20,7 @@ echo \
   "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
   $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
 
-sudo apt-get update && sudo apt upgrade
-
-# Installing Kubernetes
-printf "\n%s\n" "${cyn}Installing k3s...${end}"
-sleep 1
-curl -sfL https://get.k3s.io | sudo sh -
-
-sudo echo "namespace 8.8.8.8" >> /etc/resolv.conf
-sudo echo "namespace 8.8.4.4" >> /etc/resolv.conf
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 # Initializing environment variables
 echo "MONGO_DB_USERNAME" >> ~/.bashrc
@@ -45,9 +39,16 @@ cd ..
 # Deploying the MongoDb locally
 printf "\n%s\n" "${cyn}Deploying local Mongo Database...${end}"
 sleep 1
-icc variables -dbu -dbp -f
 source ~/.bashrc
 icc database -c
+
+# Installing Kubernetes
+printf "\n%s\n" "${cyn}Installing k3s...${end}"
+sleep 1
+curl -sfL https://get.k3s.io | sudo sh -
+
+sudo echo "namespace 8.8.8.8" >> /etc/resolv.conf
+sudo echo "namespace 8.8.4.4" >> /etc/resolv.conf
 
 # Restarting for changes to take effect
 printf "\n%s\n" "${grn}Done! Restarting for changes to take effect...${end}"
