@@ -92,7 +92,7 @@ def datanase(
     if create:
         console.print("Creating database...", style="info")
         os.chdir(mongo_db_path)
-        os.system("sudo docker compose up --build -d")
+        os.system("sudo -E docker compose up --build -d")
         console.print("Done.", style="success")
     elif delete:
         console.print(
