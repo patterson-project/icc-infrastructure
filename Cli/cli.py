@@ -182,9 +182,10 @@ def status(watch: bool = typer.Option(False, "--watch",
 def discover() -> None:
     """List TP-Link Kasa devices on home network"""
     devices = asyncio.run(Discover.discover())
-    for addr, dev in devices.items():
-        asyncio.run(dev.update())
-        print(f"{addr} >> {dev}")
+    for address, device in devices.items():
+        asyncio.run(device.update())
+        print("{:<12} {:<20} {:<20}".format(
+            address, device.alias, device.device_type))
 
 
 def _version_callback(value: bool) -> None:

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: display-service
+spec:
+  selector:
+    matchLabels:
+      svc: display-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        svc: display-service
+    spec:
+      containers:
+        - name: device-container
+          image: $DOCKER_HUB_USERNAME/iot-control-center:display-service
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: MONGO_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: iot-secrets
+                  key: MONGO_DB_USERNAME
+            - name: MONGO_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: iot-secrets
+                  key: MONGO_DB_PASSWORD
+            - name: MONGO_DB_IP
+              valueFrom:
+                secretKeyRef:
+                  name: iot-secrets
+                  key: MONGO_DB_IP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: display-service-cluster-ip
+spec:
+  type: ClusterIP
+  selector:
+    svc: display-service
+  ports:
+    - port: 8000
+

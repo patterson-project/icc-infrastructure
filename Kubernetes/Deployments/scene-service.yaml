@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scene-service
+spec:
+  selector:
+    matchLabels:
+      svc: scene-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        svc: scene-service
+    spec:
+      containers:
+        - name: scene-service-container
+          image: $DOCKER_HUB_USERNAME/iot-control-center:scene-service
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: MONGO_DB_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: iot-secrets
+                  key: MONGO_DB_USERNAME
+            - name: MONGO_DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: iot-secrets
+                  key: MONGO_DB_PASSWORD
+            - name: MONGO_DB_IP
+              valueFrom:
+                secretKeyRef:
+                  name: iot-secrets
+                  key: MONGO_DB_IP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: scene-service-cluster-ip
+spec:
+  type: ClusterIP
+  selector:
+    svc: scene-service
+  ports:
+    - port: 8000

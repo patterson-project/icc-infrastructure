@@ -1,23 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: device-manager-service
+  name: chromecast-controller
 spec:
   selector:
     matchLabels:
-      svc: device-manager-service
+      svc: chromecast-controller
   replicas: 1
   template:
     metadata:
       labels:
-        svc: device-manager-service
+        svc: chromecast-controller
     spec:
       containers:
-        - name: device-manager-container
-          image: $DOCKER_HUB_USERNAME/iot-control-center:device-manager-service
+        - name: chromecast-container
+          image: $DOCKER_HUB_USERNAME/iot-control-center:chromecast-controller
           imagePullPolicy: Always
-          ports:
-            - containerPort: 8000
           env:
             - name: MONGO_DB_USERNAME
               valueFrom:
@@ -38,11 +36,10 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: device-manager-service-cluster-ip
+  name: chromecast-controller-cluster-ip
 spec:
   type: ClusterIP
   selector:
-    svc: device-manager-service
+    svc: chromecast-controller
   ports:
     - port: 8000
-
