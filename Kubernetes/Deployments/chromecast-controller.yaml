@@ -32,6 +32,11 @@ spec:
                 secretKeyRef:
                   name: iot-secrets
                   key: MONGO_DB_IP
+            - name: VIDEO_PATH
+              valueFrom:
+                secretKeyRef:
+                  name: iot-secrets
+                  key: VIDEO_PATH
 ---
 apiVersion: v1
 kind: Service
