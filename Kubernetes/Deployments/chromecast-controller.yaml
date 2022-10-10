@@ -17,6 +17,7 @@ spec:
         - name: chromecast-container
           image: $DOCKER_HUB_USERNAME/iot-control-center:chromecast-controller
           imagePullPolicy: Always
+          privileged: true
           env:
             - name: MONGO_DB_USERNAME
               valueFrom:
