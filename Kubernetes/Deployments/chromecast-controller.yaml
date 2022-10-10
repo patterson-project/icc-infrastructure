@@ -33,14 +33,9 @@ spec:
                 secretKeyRef:
                   name: iot-secrets
                   key: MONGO_DB_IP
-            - name: VIDEO_PATH
-              valueFrom:
-                secretKeyRef:
-                  name: iot-secrets
-                  key: VIDEO_PATH
           volumeMounts:
             - name: local-videos
-              mountPath: /mnt/media
+              mountPath: /app/media
       volumes:
         - name: local-videos
           hostPath:
