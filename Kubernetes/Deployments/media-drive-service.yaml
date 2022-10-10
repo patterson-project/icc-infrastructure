@@ -25,7 +25,7 @@ spec:
                   key: MEDIA_DRIVE_IP
           volumeMounts:
             - name: local-videos
-              mountPath: /app
+              mountPath: /app/media
       volumes:
         - name: local-videos
           hostPath:
