@@ -13,6 +13,7 @@ spec:
         svc: chromecast-controller
     
     spec:
+      hostNetwork: true
       containers:
         - name: chromecast-container
           image: $DOCKER_HUB_USERNAME/iot-control-center:chromecast-controller
