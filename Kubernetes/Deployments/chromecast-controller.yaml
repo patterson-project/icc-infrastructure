@@ -33,11 +33,14 @@ spec:
                 secretKeyRef:
                   name: iot-secrets
                   key: MONGO_DB_IP
+            - name: MEDIA_DRIVE_IP
+              valueFrom:
+                secretKeyRef:
+                  name: iot-secrets
+                  key: MEDIA_DRIVE_IP
           volumeMounts:
             - name: local-videos
               mountPath: /app/media
-          securityContext:
-            privileged: true
       volumes:
         - name: local-videos
           hostPath:
