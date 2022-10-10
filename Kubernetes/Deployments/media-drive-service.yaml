@@ -30,7 +30,7 @@ spec:
       volumes:
         - name: local-videos
           hostPath:
-            path: $VIDEO_PATH
+            path: $MEDIA_PATH
 ---
 apiVersion: v1
 kind: Service
