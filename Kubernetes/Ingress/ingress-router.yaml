@@ -52,3 +52,10 @@ spec:
                 name: scene-service-cluster-ip
                 port:
                   number: 8000
+          - path: /media
+            pathType: Prefix
+            backend:
+              service:
+                name: media-drive-service-cluster-ip
+                port:
+                  number: 8000
