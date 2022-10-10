@@ -17,7 +17,6 @@ spec:
         - name: chromecast-container
           image: $DOCKER_HUB_USERNAME/iot-control-center:chromecast-controller
           imagePullPolicy: Always
-          privileged: true
           env:
             - name: MONGO_DB_USERNAME
               valueFrom:
@@ -37,6 +36,8 @@ spec:
           volumeMounts:
             - name: local-videos
               mountPath: /app/media
+          securityContext:
+            privileged: true
       volumes:
         - name: local-videos
           hostPath:
