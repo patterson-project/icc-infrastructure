@@ -25,8 +25,8 @@ spec:
                   name: iot-secrets
                   key: MEDIA_DRIVE_IP
           volumeMounts:
-              - name: local-videos
-                mountPath: /app
+            - name: local-videos
+              mountPath: /app
       volumes:
         - name: local-videos
           hostPath:
