@@ -11,7 +11,14 @@ spec:
     metadata:
       labels:
         svc: chromecast-controller
+    volumes:
+    - name: local-videos
+      hostPath:
+        path: $VIDEO_PATH
     spec:
+      volumeMounts:
+      - name: local-videos
+        mountPath: /mnt/media
       containers:
         - name: chromecast-container
           image: $DOCKER_HUB_USERNAME/iot-control-center:chromecast-controller
