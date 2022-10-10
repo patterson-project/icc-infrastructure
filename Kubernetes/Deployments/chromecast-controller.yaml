@@ -56,4 +56,4 @@ spec:
   selector:
     svc: chromecast-controller
   ports:
-    - port: 8000
+    - port: 5000
