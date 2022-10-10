@@ -11,14 +11,8 @@ spec:
     metadata:
       labels:
         svc: chromecast-controller
-    volumes:
-    - name: local-videos
-      hostPath:
-        path: $VIDEO_PATH
+    
     spec:
-      volumeMounts:
-      - name: local-videos
-        mountPath: /mnt/media
       containers:
         - name: chromecast-container
           image: $DOCKER_HUB_USERNAME/iot-control-center:chromecast-controller
@@ -44,6 +38,13 @@ spec:
                 secretKeyRef:
                   name: iot-secrets
                   key: VIDEO_PATH
+      volumeMounts:
+        - name: local-videos
+          mountPath: /mnt/media
+    volumes:
+      - name: local-videos
+        hostPath:
+          path: $VIDEO_PATH
 ---
 apiVersion: v1
 kind: Service
