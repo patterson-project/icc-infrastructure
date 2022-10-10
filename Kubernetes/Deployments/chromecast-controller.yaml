@@ -38,13 +38,13 @@ spec:
                 secretKeyRef:
                   name: iot-secrets
                   key: VIDEO_PATH
-      volumeMounts:
+          volumeMounts:
+            - name: local-videos
+              mountPath: /mnt/media
+      volumes:
         - name: local-videos
-          mountPath: /mnt/media
-    volumes:
-      - name: local-videos
-        hostPath:
-          path: $VIDEO_PATH
+          hostPath:
+            path: $VIDEO_PATH
 ---
 apiVersion: v1
 kind: Service
