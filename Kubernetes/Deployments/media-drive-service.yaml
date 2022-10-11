@@ -13,7 +13,6 @@ spec:
         svc: media-drive-service
     
     spec:
-      hostNetwork: true
       containers:
         - name: chromecast-container
           image: $DOCKER_HUB_USERNAME/iot-control-center:media-drive-service
@@ -41,4 +40,4 @@ spec:
   selector:
     svc: media-drive-service
   ports:
-    - port: 5001
+    - port: 8000
