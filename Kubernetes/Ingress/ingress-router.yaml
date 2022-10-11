@@ -58,4 +58,4 @@ spec:
               service:
                 name: media-drive-service-cluster-ip
                 port:
-                  number: 5001
+                  number: 8000
