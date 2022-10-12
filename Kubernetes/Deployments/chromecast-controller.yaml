@@ -39,6 +39,13 @@ spec:
                 secretKeyRef:
                   name: iot-secrets
                   key: MEDIA_DRIVE_IP
+          volumeMounts:
+            - name: local-videos
+              mountPath: /app/media
+      volumes:
+        - name: local-videos
+          hostPath:
+            path: $MEDIA_PATH
 ---
 apiVersion: v1
 kind: Service
