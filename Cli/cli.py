@@ -116,18 +116,38 @@ def env_variable_replace(variable: str, value: str):
     )
 
 
-@ app.command(name="variables")
+def env_variable_exists(variable: str) -> bool:
+    with open("~/.bashrc") as file:
+        if variable in file.read():
+            return True
+        else:
+            return False
+
+
+def set_env_variable(variable: str, value: str):
+    os.system(f"echo >> 'export {variable}={value}' >> ~/.bashrc")
+
+
+@app.command(name="variables")
 def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
                                             "-dbip", help="Change MongoDb IP address"),
               mongo_username: bool = typer.Option(False, "--db-username",
                                                   "-dbu", help="Change MongoDb admin username"),
               mongo_password: bool = typer.Option(False, "--db-password",
                                                   "-dbp", help="Change MongoDb admin password"),
+              media_drive_ip: bool = typer.Option(False, "--media-ip",
+                                                  "-mip", help="Change MongoDb admin password"),
               all: bool = typer.Option(False, "--all",
                                        "-a", help="Change all variables"),
               force: bool = typer.Option(False, "--force",
                                          "-f", help="Force without warnings")) -> None:
     """Set the various environment variables used within the cluster"""
+
+    MONGO_DB_IP = "MONGO_DB_IP"
+    MONGO_DB_USERNAME = "MONGO_DB_USERNAME"
+    MONGO_DB_PASSWORD = "MONGO_DB_PASSWORD"
+    MEDIA_DRIVE_IP = "MEDIA_DRIVE_IP"
+
     if mongo_ip or all:
         confirmation = None
         if not force:
@@ -137,29 +157,49 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
 
         if confirmation == "y" or force:
             new_ip = input("New MongoDb IP: ")
-            env_variable_replace("MONGO_DB_IP", new_ip)
+
+            if env_variable_exists(MONGO_DB_IP):
+                env_variable_replace(MONGO_DB_IP, new_ip)
+            else:
+                set_env_variable(MONGO_DB_IP, new_ip)
 
     if mongo_username or all:
         confirmation = None
         if not force:
             console.print(
-                "Warning: All connected database connections will be unauthenticated. Proceed? y/n: ", end="", style="warning")
+                "Warning: Changing database username will cause all connected database connections to become unauthenticated. Proceed? y/n: ", end="", style="warning")
             confirmation = input()
 
         if confirmation == "y" or force:
             new_username = input("New MongoDb admin username: ")
-            env_variable_replace("MONGO_DB_USERNAME", new_username)
+
+            if env_variable_exists(MONGO_DB_USERNAME):
+                env_variable_replace(MONGO_DB_USERNAME, new_username)
+            else:
+                set_env_variable(MONGO_DB_USERNAME, new_username)
 
     if mongo_password or all:
         confirmation = None
         if not force:
             console.print(
-                "Warning: All connected database connections will be unauthenticated. Proceed? y/n: ", end="", style="warning")
+                "Warning: Changing database password will cause all connected database connections to become unauthenticated. Proceed? y/n: ", end="", style="warning")
             confirmation = input()
 
         if confirmation == "y" or force:
             new_password = input("New MongoDb admin password: ")
-            env_variable_replace("MONGO_DB_PASSWORD", new_password)
+
+            if env_variable_exists(MONGO_DB_PASSWORD):
+                env_variable_replace(MONGO_DB_PASSWORD, new_password)
+            else:
+                set_env_variable(MONGO_DB_PASSWORD, new_password)
+
+    if media_drive_ip or all:
+        new_media_drive_ip = input("New MongoDb admin password: ")
+
+        if env_variable_exists(MEDIA_DRIVE_IP):
+            env_variable_replace(MEDIA_DRIVE_IP, new_media_drive_ip)
+        else:
+            set_env_variable(MEDIA_DRIVE_IP, new_media_drive_ip)
 
     console.print(
         "icc deploy must be run after for changes take effect", style="warning")
@@ -176,6 +216,25 @@ def status(watch: bool = typer.Option(False, "--watch",
         os.system("sudo kubectl get pods -w")
     else:
         os.system("sudo kubectl get pods")
+
+
+@app.command(name="logs")
+def logs(service_name: str = typer.Option(..., "--service", "-s", help="Service for which logs will be displayed. To see options, try 'icc status' to see available services."),
+         follow: bool = typer.Option(True, "--follow",
+                                     "-f", help="Follow logs")):
+    """Get logs for a service for debugging"""
+    follow_flag = ""
+    if follow:
+        follow_flag = "-f"
+
+    os.system(f"sudo kubectl logs -l svc={service_name} {follow_flag}")
+
+
+@app.command(name="shell")
+def shell(service_name: str = typer.Option(..., "--service", "-s", help="Service for which to shell into. To see options, try 'icc status' to see available services.")):
+    """Start an interactive shell session in the docker container of a service."""
+    os.system(
+        f"kubectl exec -i -t $(kubectl get pod -l svc={service_name} -o name | sed 's/pods\///') -- bash")
 
 
 @app.command(name="discover")
