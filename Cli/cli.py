@@ -117,7 +117,7 @@ def env_variable_replace(variable: str, value: str):
 
 
 def env_variable_exists(variable: str) -> bool:
-    with open("~/.bashrc") as file:
+    with open(os.path.join((os.path.expanduser('~'), '.bashrc'))) as file:
         if variable in file.read():
             return True
         else:
@@ -128,7 +128,7 @@ def set_env_variable(variable: str, value: str):
     os.system(f"echo >> 'export {variable}={value}' >> ~/.bashrc")
 
 
-@app.command(name="variables")
+@ app.command(name="variables")
 def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
                                             "-dbip", help="Change MongoDb IP address"),
               mongo_username: bool = typer.Option(False, "--db-username",
@@ -208,7 +208,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
     return
 
 
-@app.command(name="status")
+@ app.command(name="status")
 def status(watch: bool = typer.Option(False, "--watch",
                                       "-w", help="Watch pod statuses"),) -> None:
     """Get status of icc Kubernetes pods"""
@@ -218,9 +218,9 @@ def status(watch: bool = typer.Option(False, "--watch",
         os.system("sudo kubectl get pods")
 
 
-@app.command(name="logs")
+@ app.command(name="logs")
 def logs(service_name: str = typer.Option(..., "--service", "-s", help="Service for which logs will be displayed. To see options, try 'icc status' to see available services."),
-         follow: bool = typer.Option(True, "--follow",
+         follow: bool = typer.Option(False, "--follow",
                                      "-f", help="Follow logs")):
     """Get logs for a service for debugging"""
     follow_flag = ""
@@ -230,14 +230,14 @@ def logs(service_name: str = typer.Option(..., "--service", "-s", help="Service 
     os.system(f"sudo kubectl logs -l svc={service_name} {follow_flag}")
 
 
-@app.command(name="shell")
+@ app.command(name="shell")
 def shell(service_name: str = typer.Option(..., "--service", "-s", help="Service for which to shell into. To see options, try 'icc status' to see available services.")):
     """Start an interactive shell session in the docker container of a service."""
     os.system(
         f"kubectl exec -i -t $(kubectl get pod -l svc={service_name} -o name | sed 's/pods\///') -- bash")
 
 
-@app.command(name="discover")
+@ app.command(name="discover")
 def discover() -> None:
     """List TP-Link Kasa devices on home network"""
     devices = asyncio.run(Discover.discover())
@@ -253,7 +253,7 @@ def _version_callback(value: bool) -> None:
         raise typer.Exit()
 
 
-@app.callback()
+@ app.callback()
 def main(
     version: Optional[bool] = typer.Option(
         None,
