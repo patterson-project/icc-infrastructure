@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import os
+import subprocess
 from typing import Optional
 from rich.console import Console
 from rich.theme import Theme
@@ -116,14 +117,6 @@ def env_variable_replace(variable: str, value: str):
     )
 
 
-def env_variable_exists(variable: str) -> bool:
-    with open('.bashrc') as file:
-        if variable in file.read():
-            return True
-        else:
-            return False
-
-
 def set_env_variable(variable: str, value: str):
     os.system(f"echo >> 'export {variable}={value}' >> ~/.bashrc")
 
@@ -148,7 +141,9 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
     MONGO_DB_PASSWORD = "MONGO_DB_PASSWORD"
     MEDIA_DRIVE_IP = "MEDIA_DRIVE_IP"
 
-    os.system("cd ~")
+    environment_variables = subprocess.check_output("env")
+    env = dict(line.split("=")
+               for line in environment_variables.splitlines() if "=" in line)
 
     if mongo_ip or all:
         confirmation = None
@@ -160,7 +155,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
         if confirmation == "y" or force:
             new_ip = input("New MongoDb IP: ")
 
-            if env_variable_exists(MONGO_DB_IP):
+            if MONGO_DB_IP in env.keys():
                 env_variable_replace(MONGO_DB_IP, new_ip)
             else:
                 set_env_variable(MONGO_DB_IP, new_ip)
@@ -175,7 +170,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
         if confirmation == "y" or force:
             new_username = input("New MongoDb admin username: ")
 
-            if env_variable_exists(MONGO_DB_USERNAME):
+            if MONGO_DB_USERNAME in env.keys():
                 env_variable_replace(MONGO_DB_USERNAME, new_username)
             else:
                 set_env_variable(MONGO_DB_USERNAME, new_username)
@@ -190,7 +185,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
         if confirmation == "y" or force:
             new_password = input("New MongoDb admin password: ")
 
-            if env_variable_exists(MONGO_DB_PASSWORD):
+            if MONGO_DB_PASSWORD in env.keys():
                 env_variable_replace(MONGO_DB_PASSWORD, new_password)
             else:
                 set_env_variable(MONGO_DB_PASSWORD, new_password)
@@ -198,7 +193,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
     if media_drive_ip or all:
         new_media_drive_ip = input("New MongoDb admin password: ")
 
-        if env_variable_exists(MEDIA_DRIVE_IP):
+        if MEDIA_DRIVE_IP in env.keys():
             env_variable_replace(MEDIA_DRIVE_IP, new_media_drive_ip)
         else:
             set_env_variable(MEDIA_DRIVE_IP, new_media_drive_ip)
@@ -206,8 +201,6 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
     console.print(
         "icc deploy must be run after for changes take effect", style="warning")
     console.print("Done.", style="success")
-
-    os.system("cd -")
 
     return
 
