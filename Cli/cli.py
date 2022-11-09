@@ -118,7 +118,7 @@ def env_variable_replace(variable: str, value: str):
 
 
 def set_env_variable(variable: str, value: str):
-    os.system(f"echo >> 'export {variable}={value}' >> ~/.bashrc")
+    os.system(f"echo 'export {variable}={value}' >> ~/.bashrc")
 
 
 @ app.command(name="variables")
@@ -141,8 +141,9 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
     MONGO_DB_PASSWORD = "MONGO_DB_PASSWORD"
     MEDIA_DRIVE_IP = "MEDIA_DRIVE_IP"
 
-    environment_variables = subprocess.check_output("env")
-    env = dict(line.split("=")
+    environment_variables = subprocess.check_output(
+        "env", shell=True, executable='/bin/bash', universal_newlines=True)
+    env = dict(line.split("=", 1)
                for line in environment_variables.splitlines() if "=" in line)
 
     if mongo_ip or all:
@@ -191,7 +192,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
                 set_env_variable(MONGO_DB_PASSWORD, new_password)
 
     if media_drive_ip or all:
-        new_media_drive_ip = input("New MongoDb admin password: ")
+        new_media_drive_ip = input("New Media Drive IP Address: ")
 
         if MEDIA_DRIVE_IP in env.keys():
             env_variable_replace(MEDIA_DRIVE_IP, new_media_drive_ip)
