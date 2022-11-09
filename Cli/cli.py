@@ -117,7 +117,7 @@ def env_variable_replace(variable: str, value: str):
 
 
 def env_variable_exists(variable: str) -> bool:
-    with open(os.path.join((os.path.expanduser('~'), '.bashrc'))) as file:
+    with open('.bashrc') as file:
         if variable in file.read():
             return True
         else:
@@ -147,6 +147,8 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
     MONGO_DB_USERNAME = "MONGO_DB_USERNAME"
     MONGO_DB_PASSWORD = "MONGO_DB_PASSWORD"
     MEDIA_DRIVE_IP = "MEDIA_DRIVE_IP"
+
+    os.system("cd ~")
 
     if mongo_ip or all:
         confirmation = None
@@ -204,6 +206,8 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
     console.print(
         "icc deploy must be run after for changes take effect", style="warning")
     console.print("Done.", style="success")
+
+    os.system("cd -")
 
     return
 
