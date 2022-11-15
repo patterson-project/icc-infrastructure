@@ -22,16 +22,6 @@ app = typer.Typer(add_completion=False)
 console = Console(theme=icc_cli_theme)
 
 
-@app.command(name="install")
-def install() -> None:
-    """Installs IoT Control Center on your server"""
-    # Set ICC_INFRASTRUCTURE_PATH
-    # Run set_env_variables with (a) argument (set all env variables)
-    # Source bashrc to export variables
-    # Ask for current architecture, Run deploy function
-    #
-
-
 @app.command(name="update")
 def update(service_name: str = typer.Option("", "--service", "-s", help="Service to be updated. To see options, try 'icc status' to see available services.")) -> None:
     """Updates icc pods with the most recent version."""
@@ -143,7 +133,9 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
               mongo_password: bool = typer.Option(False, "--db-password",
                                                   "-dbp", help="Change MongoDb admin password"),
               media_drive_ip: bool = typer.Option(False, "--media-ip",
-                                                  "-mip", help="Change MongoDb admin password"),
+                                                  "-mip", help="Change Media Drive IP address"),
+              media_path: bool = typer.Option(False, "--media-path",
+                                              "-mp", help="Change Media Drive IP address"),
               all: bool = typer.Option(False, "--all",
                                        "-a", help="Change all variables"),
               force: bool = typer.Option(False, "--force",
@@ -154,6 +146,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
     MONGO_DB_USERNAME = "MONGO_DB_USERNAME"
     MONGO_DB_PASSWORD = "MONGO_DB_PASSWORD"
     MEDIA_DRIVE_IP = "MEDIA_DRIVE_IP"
+    MEDIA_PATH = "MEDIA_PATH"
 
     environment_variables = subprocess.check_output(
         "env", shell=True, executable='/bin/bash', universal_newlines=True)
@@ -213,6 +206,14 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
         else:
             set_env_variable(MEDIA_DRIVE_IP, new_media_drive_ip)
 
+    if media_path or all:
+        new_media_path = input("New Media Drive Path: ")
+
+        if MEDIA_PATH in env.keys():
+            env_variable_replace(MEDIA_PATH, new_media_path)
+        else:
+            set_env_variable(MEDIA_PATH, new_media_path)
+
     console.print(
         "icc deploy must be run after for changes take effect", style="warning")
     console.print("Done.", style="success")
@@ -257,6 +258,15 @@ def discover() -> None:
         asyncio.run(device.update())
         print("{:<12} {:<20} {:<20}".format(
             address, device.alias, device.device_type))
+
+
+@app.command(name="install")
+def install() -> None:
+    """Installs IoT Control Center on your server"""
+    variables(all=True)
+    architecture = input(
+        "Enter device CPU architectue (options: amd64, arm64):")
+    deploy(cpu_architecture=architecture)
 
 
 def _version_callback(value: bool) -> None:
