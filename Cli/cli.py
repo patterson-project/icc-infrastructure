@@ -266,7 +266,8 @@ def discover() -> None:
 def install() -> None:
     """Installs IoT Control Center on your server"""
     variables(all=True, force=True)
-    subprocess.run("source ~/.bashrc")
+    # TODO: Find a way to source bashrc. os system uses sh and subprocess can't find ~ home
+    os.system("source ~/.bashrc")
     database(create=True)
     architecture = input(
         "Enter device CPU architectue (options: amd64, arm64): ")
