@@ -266,7 +266,7 @@ def discover() -> None:
 def install() -> None:
     """Installs IoT Control Center on your server"""
     variables(all=True, force=True)
-    os.system("source ~/.bashrc")
+    subprocess.run("source ~/.bashrc")
     database(create=True)
     architecture = input(
         "Enter device CPU architectue (options: amd64, arm64): ")
