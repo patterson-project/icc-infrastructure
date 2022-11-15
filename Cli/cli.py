@@ -58,7 +58,8 @@ def deploy(cpu_architecture: str = typer.Option(..., "--arch", "-a", help="Host 
             f"Invalid CPU architecture. {cpu_architecture} is not supported.", style="error")
         raise typer.Exit()
 
-    os.system("sudo kubectl delete --all pods,services,deployments,ingress,secrets")
+    os.system(
+        "sudo kubectl delete --all pods,services,deployments,ingress,secrets")
 
     kubernetes_path = os.path.join(
         os.environ["ICC_INFRASTRUCTURE_PATH"], "Kubernetes")
@@ -82,7 +83,7 @@ def deploy(cpu_architecture: str = typer.Option(..., "--arch", "-a", help="Host 
 
 
 @app.command(name="database")
-def datanase(
+def database(
     create: bool = typer.Option(False, "--create",
                                 "-c", help="Create docker container with MongoDb. If an instance already exists, this command has no effect."),
     delete: bool = typer.Option(False, "--delete",
@@ -111,7 +112,8 @@ def datanase(
             console.print("Deleting database...", style="info")
             os.chdir(mongo_db_path)
             os.system("sudo -E docker compose rm")
-            os.system("sudo rm -rf database && sudo rm -rf init-mongo.js")
+            os.system(
+                "sudo rm -rf database && sudo rm -rf init-mongo.js")
             console.print("Done.", style="success")
 
 
@@ -263,9 +265,11 @@ def discover() -> None:
 @app.command(name="install")
 def install() -> None:
     """Installs IoT Control Center on your server"""
-    variables(all=True)
+    variables(all=True, force=True)
+    os.system("source ~/.bashrc")
+    database(create=True)
     architecture = input(
-        "Enter device CPU architectue (options: amd64, arm64):")
+        "Enter device CPU architectue (options: amd64, arm64): ")
     deploy(cpu_architecture=architecture)
 
 
