@@ -22,12 +22,26 @@ app = typer.Typer(add_completion=False)
 console = Console(theme=icc_cli_theme)
 
 
+@app.command(name="install")
+def install() -> None:
+    """Installs IoT Control Center on your server"""
+    # Set ICC_INFRASTRUCTURE_PATH
+    # Run set_env_variables with (a) argument (set all env variables)
+    # Source bashrc to export variables
+    # Ask for current architecture, Run deploy function
+    #
+
+
 @app.command(name="update")
-def update() -> None:
+def update(service_name: str = typer.Option("", "--service", "-s", help="Service to be updated. To see options, try 'icc status' to see available services.")) -> None:
     """Updates icc pods with the most recent version."""
-    console.print(
-        "Deleting all pods and pulling newest from docker hub...", style="info")
-    os.system("sudo kubectl delete --all pods")
+    if service_name != "":
+        os.system(f"sudo kubectl delete pods -l svc={service_name}")
+    else:
+        console.print(
+            "Deleting all pods and pulling newest from docker hub...", style="info")
+        os.system("sudo kubectl delete --all pods")
+
     console.print("Done.", style="success")
     raise typer.Exit()
 
@@ -43,7 +57,7 @@ def upgrade() -> None:
 
 
 @app.command(name="deploy")
-def deploy(cpu_architecture: str = typer.Option(..., "--arch", "-a", help="Host CPU architecture. Supported architectures include: arm64, amd64")) -> None:
+def deploy(cpu_architecture: str = typer.Option(..., "--arch", "-a", help="Host CPU architecture. Supported architectures include: arm64, amd64"), service_name: str = typer.Option(..., "--service", "-s", help="Service for which to shell into. To see options, try 'icc status' to see available services.")) -> None:
     """Deploys all icc infrastructure"""
     if cpu_architecture == "amd64":
         os.environ["DOCKER_HUB_USERNAME"] = "canadrian72"
@@ -121,7 +135,7 @@ def set_env_variable(variable: str, value: str):
     os.system(f"echo 'export {variable}={value}' >> ~/.bashrc")
 
 
-@ app.command(name="variables")
+@app.command(name="variables")
 def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
                                             "-dbip", help="Change MongoDb IP address"),
               mongo_username: bool = typer.Option(False, "--db-username",
