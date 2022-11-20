@@ -57,7 +57,7 @@ def upgrade() -> None:
 
 
 @app.command(name="deploy")
-def deploy(cpu_architecture: str = typer.Option(..., "--arch", "-a", help="Host CPU architecture. Supported architectures include: arm64, amd64"), service_name: str = typer.Option(..., "--service", "-s", help="Service for which to shell into. To see options, try 'icc status' to see available services.")) -> None:
+def deploy(cpu_architecture: str = typer.Option(..., "--arch", "-a", help="Host CPU architecture. Supported architectures include: arm64, amd64")) -> None:
     """Deploys all icc infrastructure."""
     if cpu_architecture == "amd64":
         os.environ["DOCKER_HUB_USERNAME"] = "canadrian72"
@@ -169,7 +169,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
         confirmation = None
         if not force:
             console.print(
-                "Warning: All connected database connections will be disconnected. Proceed? y/n: ", end="", style="warning")
+                "Warning: Changing database IP address will disconnect all connected services. Proceed? y/n: ", end="", style="warning")
             confirmation = input()
 
         if confirmation == "y" or force:
