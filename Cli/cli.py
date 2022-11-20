@@ -24,12 +24,12 @@ console = Console(theme=icc_cli_theme)
 
 @app.command(name="install")
 def install() -> None:
-    """Installs IoT Control Center on your server"""
-    # Set ICC_INFRASTRUCTURE_PATH
+    """WIP: Installs IoT Control Center on your server"""
+    # TODO:
     # Run set_env_variables with (a) argument (set all env variables)
     # Source bashrc to export variables
     # Ask for current architecture, Run deploy function
-    #
+    pass
 
 
 @app.command(name="update")
