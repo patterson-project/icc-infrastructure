@@ -149,9 +149,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
               media_path: bool = typer.Option(False, "--media-path",
                                               "-mp", help="Change Media Drive IP address"),
               all: bool = typer.Option(False, "--all",
-                                       "-a", help="Change all variables"),
-              force: bool = typer.Option(False, "--force",
-                                         "-f", help="Force without warnings")) -> None:
+                                       "-a", help="Change all variables")) -> None:
     """Set the various environment variables used within the cluster."""
 
     MONGO_DB_IP = "MONGO_DB_IP"
@@ -166,49 +164,28 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
                for line in environment_variables.splitlines() if "=" in line)
 
     if mongo_ip or all:
-        confirmation = None
-        if not force:
-            console.print(
-                "Warning: Changing database IP address will disconnect all connected services. Proceed? y/n: ", end="", style="warning")
-            confirmation = input()
+        new_ip = input("New MongoDb IP: ")
 
-        if confirmation == "y" or force:
-            new_ip = input("New MongoDb IP: ")
-
-            if MONGO_DB_IP in env.keys():
-                env_variable_replace(MONGO_DB_IP, new_ip)
-            else:
-                set_env_variable(MONGO_DB_IP, new_ip)
+        if MONGO_DB_IP in env.keys():
+            env_variable_replace(MONGO_DB_IP, new_ip)
+        else:
+            set_env_variable(MONGO_DB_IP, new_ip)
 
     if mongo_username or all:
-        confirmation = None
-        if not force:
-            console.print(
-                "Warning: Changing database username will cause all connected database connections to become unauthenticated. Proceed? y/n: ", end="", style="warning")
-            confirmation = input()
+        new_username = input("New MongoDb admin username: ")
 
-        if confirmation == "y" or force:
-            new_username = input("New MongoDb admin username: ")
-
-            if MONGO_DB_USERNAME in env.keys():
-                env_variable_replace(MONGO_DB_USERNAME, new_username)
-            else:
-                set_env_variable(MONGO_DB_USERNAME, new_username)
+        if MONGO_DB_USERNAME in env.keys():
+            env_variable_replace(MONGO_DB_USERNAME, new_username)
+        else:
+            set_env_variable(MONGO_DB_USERNAME, new_username)
 
     if mongo_password or all:
-        confirmation = None
-        if not force:
-            console.print(
-                "Warning: Changing database password will cause all connected database connections to become unauthenticated. Proceed? y/n: ", end="", style="warning")
-            confirmation = input()
+        new_password = input("New MongoDb admin password: ")
 
-        if confirmation == "y" or force:
-            new_password = input("New MongoDb admin password: ")
-
-            if MONGO_DB_PASSWORD in env.keys():
-                env_variable_replace(MONGO_DB_PASSWORD, new_password)
-            else:
-                set_env_variable(MONGO_DB_PASSWORD, new_password)
+        if MONGO_DB_PASSWORD in env.keys():
+            env_variable_replace(MONGO_DB_PASSWORD, new_password)
+        else:
+            set_env_variable(MONGO_DB_PASSWORD, new_password)
 
     if media_drive_ip or all:
         new_media_drive_ip = input("New Media Drive IP Address: ")
@@ -227,7 +204,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
             set_env_variable(MEDIA_PATH, new_media_path)
 
     console.print(
-        "icc deploy must be run after for changes take effect", style="warning")
+        "source ~/.bashrc to load environment variables then run icc deploy for changes take effect.", style="warning")
     console.print("Done.", style="success")
 
     return
