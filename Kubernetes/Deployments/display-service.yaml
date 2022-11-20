@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: power-service
+  name: display-service
 spec:
   selector:
     matchLabels:
-      svc: power-service
+      svc: display-service
   replicas: 1
   template:
     metadata:
       labels:
-        svc: power-service
+        svc: display-service
     spec:
       containers:
-        - name: power-service-container
-          image: $DOCKER_HUB_USERNAME/iot-control-center:power-service
+        - name: device-container
+          image: $DOCKER_HUB_USERNAME/iot-control-center:display-service
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
@@ -38,10 +38,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: power-service-cluster-ip
+  name: display-service-cluster-ip
 spec:
   type: ClusterIP
   selector:
-    svc: power-service
+    svc: display-service
   ports:
     - port: 8000
+

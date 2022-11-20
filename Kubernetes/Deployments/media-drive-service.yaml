@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media-drive-service
+spec:
+  selector:
+    matchLabels:
+      svc: media-drive-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        svc: media-drive-service
+    
+    spec:
+      containers:
+        - name: chromecast-container
+          image: $DOCKER_HUB_USERNAME/iot-control-center:media-drive-service
+          imagePullPolicy: Always
+          env:
+            - name: MEDIA_DRIVE_IP
+              valueFrom:
+                secretKeyRef:
+                  name: iot-secrets
+                  key: MEDIA_DRIVE_IP
+          volumeMounts:
+            - name: local-videos
+              mountPath: /app/media
+      volumes:
+        - name: local-videos
+          hostPath:
+            path: $MEDIA_PATH
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: media-drive-service-cluster-ip
+spec:
+  type: ClusterIP
+  selector:
+    svc: media-drive-service
+  ports:
+    - port: 8000

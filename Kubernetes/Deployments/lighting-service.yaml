@@ -34,3 +34,14 @@ spec:
                 secretKeyRef:
                   name: iot-secrets
                   key: MONGO_DB_IP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: lighting-service-cluster-ip
+spec:
+  type: ClusterIP
+  selector:
+    svc: lighting-service
+  ports:
+    - port: 8000

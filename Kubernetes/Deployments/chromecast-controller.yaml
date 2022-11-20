@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: power-service
+  name: chromecast-controller
 spec:
   selector:
     matchLabels:
-      svc: power-service
+      svc: chromecast-controller
   replicas: 1
   template:
     metadata:
       labels:
-        svc: power-service
+        svc: chromecast-controller
+    
     spec:
+      hostNetwork: true
       containers:
-        - name: power-service-container
-          image: $DOCKER_HUB_USERNAME/iot-control-center:power-service
+        - name: chromecast-container
+          image: $DOCKER_HUB_USERNAME/iot-control-center:chromecast-controller
           imagePullPolicy: Always
-          ports:
-            - containerPort: 8000
           env:
             - name: MONGO_DB_USERNAME
               valueFrom:
@@ -34,14 +34,26 @@ spec:
                 secretKeyRef:
                   name: iot-secrets
                   key: MONGO_DB_IP
+            - name: MEDIA_DRIVE_IP
+              valueFrom:
+                secretKeyRef:
+                  name: iot-secrets
+                  key: MEDIA_DRIVE_IP
+          volumeMounts:
+            - name: local-videos
+              mountPath: /app/media
+      volumes:
+        - name: local-videos
+          hostPath:
+            path: $MEDIA_PATH
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: power-service-cluster-ip
+  name: chromecast-controller-cluster-ip
 spec:
   type: ClusterIP
   selector:
-    svc: power-service
+    svc: chromecast-controller
   ports:
-    - port: 8000
+    - port: 5000
