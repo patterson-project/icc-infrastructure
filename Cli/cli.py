@@ -24,7 +24,7 @@ console = Console(theme=icc_cli_theme)
 
 @app.command(name="install")
 def install() -> None:
-    """WIP: Installs IoT Control Center on your server"""
+    """WIP: Installs IoT Control Center on your server."""
     # TODO:
     # Run set_env_variables with (a) argument (set all env variables)
     # Source bashrc to export variables
@@ -58,7 +58,7 @@ def upgrade() -> None:
 
 @app.command(name="deploy")
 def deploy(cpu_architecture: str = typer.Option(..., "--arch", "-a", help="Host CPU architecture. Supported architectures include: arm64, amd64"), service_name: str = typer.Option(..., "--service", "-s", help="Service for which to shell into. To see options, try 'icc status' to see available services.")) -> None:
-    """Deploys all icc infrastructure"""
+    """Deploys all icc infrastructure."""
     if cpu_architecture == "amd64":
         os.environ["DOCKER_HUB_USERNAME"] = "canadrian72"
     elif cpu_architecture == "arm64":
@@ -99,7 +99,7 @@ def database(
     delete: bool = typer.Option(False, "--delete",
                                 "-d", help="Delete docker container with MongoDb")
 ) -> None:
-    """Create or delete the icc local MongoDb"""
+    """Create or delete the icc local MongoDb."""
     mongo_db_path = os.path.join(
         os.environ["ICC_INFRASTRUCTURE_PATH"], "MongoDb")
 
@@ -152,7 +152,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
                                        "-a", help="Change all variables"),
               force: bool = typer.Option(False, "--force",
                                          "-f", help="Force without warnings")) -> None:
-    """Set the various environment variables used within the cluster"""
+    """Set the various environment variables used within the cluster."""
 
     MONGO_DB_IP = "MONGO_DB_IP"
     MONGO_DB_USERNAME = "MONGO_DB_USERNAME"
@@ -236,7 +236,7 @@ def variables(mongo_ip: bool = typer.Option(False, "--db-ip",
 @ app.command(name="status")
 def status(watch: bool = typer.Option(False, "--watch",
                                       "-w", help="Watch pod statuses"),) -> None:
-    """Get status of icc Kubernetes pods"""
+    """Get status of icc Kubernetes pods."""
     if (watch):
         os.system("sudo kubectl get pods -w")
     else:
@@ -264,7 +264,7 @@ def shell(service_name: str = typer.Option(..., "--service", "-s", help="Service
 
 @ app.command(name="discover")
 def discover() -> None:
-    """List TP-Link Kasa devices on home network"""
+    """List TP-Link Kasa devices on home network."""
     devices = asyncio.run(Discover.discover())
     for address, device in devices.items():
         asyncio.run(device.update())
@@ -274,7 +274,7 @@ def discover() -> None:
 
 @app.command(name="install")
 def install() -> None:
-    """Installs IoT Control Center on your server"""
+    """Installs IoT Control Center on your server."""
     variables(all=True, force=True)
     # TODO: Find a way to source bashrc. os system uses sh and subprocess can't find ~ home
     os.system("source ~/.bashrc")
