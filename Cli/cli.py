@@ -8,7 +8,7 @@ import typer
 import asyncio
 from kasa import Discover
 
-__version__ = "0.0.1"
+__version__ = "1.0.0"
 __app_name__ = "icc"
 
 icc_cli_theme = Theme({
@@ -36,11 +36,12 @@ def install() -> None:
 def update(service_name: str = typer.Option("", "--service", "-s", help="Service to be updated. To see options, try 'icc status' to see available services.")) -> None:
     """Updates icc pods with the most recent version."""
     if service_name != "":
-        os.system(f"sudo kubectl delete pods -l svc={service_name}")
+        os.system(
+            f"sudo kubectl delete pods -l svc={service_name} --wait=false")
     else:
         console.print(
             "Deleting all pods and pulling newest from docker hub...", style="info")
-        os.system("sudo kubectl delete --all pods")
+        os.system("sudo kubectl delete --all pods --wait=false")
 
     console.print("Done.", style="success")
     raise typer.Exit()
